@@ -1,1 +1,1 @@
-json.array! @todo_lists, :id, :name
+json.array! @todo_lists, :id, :name, :created_at, :updated_at
