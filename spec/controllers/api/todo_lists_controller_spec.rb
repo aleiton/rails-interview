@@ -142,7 +142,6 @@ describe Api::TodoListsController do
           delete :destroy, params: { id: todo_list.id }, format: :json
         end.to change(TodoList, :count).by(-1)
       end
-
     end
 
     context 'when the todo list does not exist' do
