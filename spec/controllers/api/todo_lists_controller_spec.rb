@@ -127,6 +127,29 @@ describe Api::TodoListsController do
     end
   end
 
+  describe 'POST complete_all' do
+    include ActiveJob::TestHelper
+
+    let!(:todo_list) { TodoList.create!(name: 'Bulk Complete') }
+
+    it 'returns 202 and enqueues a CompleteAllItemsJob' do
+      expect do
+        post :complete_all, params: { id: todo_list.id }, format: :json
+      end.to have_enqueued_job(CompleteAllItemsJob).with(todo_list.id)
+
+      expect(response.status).to eq(202)
+    end
+
+    context 'when the todo list does not exist' do
+      it 'returns a 404 with error message' do
+        post :complete_all, params: { id: 0 }, format: :json
+
+        expect(response.status).to eq(404)
+        expect(JSON.parse(response.body)['errors']).to include('Record not found')
+      end
+    end
+  end
+
   describe 'DELETE destroy' do
     let!(:todo_list) { TodoList.create!(name: 'To Delete') }
 
