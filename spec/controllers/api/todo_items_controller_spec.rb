@@ -72,7 +72,7 @@ describe Api::TodoItemsController do
 
         body = JSON.parse(response.body)
 
-        expect(body['errors']).to include("Description can't be blank")
+        expect(body['errors']).to include('Description is too short (minimum is 5 characters)')
       end
 
       it 'does not persist the todo item' do
@@ -113,7 +113,7 @@ describe Api::TodoItemsController do
 
         body = JSON.parse(response.body)
 
-        expect(body['errors']).to include("Description can't be blank")
+        expect(body['errors']).to include('Description is too short (minimum is 5 characters)')
       end
     end
 
