@@ -3,7 +3,7 @@ module Api
     skip_before_action :verify_authenticity_token
 
     before_action :set_todo_list
-    before_action :set_todo_item, only: %i[show update destroy]
+    before_action :set_todo_item, only: %i[update destroy]
 
     # GET /api/todolists/:todo_list_id/todoitems
     def index
