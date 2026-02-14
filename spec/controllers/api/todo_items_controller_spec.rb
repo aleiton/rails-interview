@@ -75,6 +75,13 @@ describe Api::TodoItemsController do
         expect(body['errors']).to include('Description is too short (minimum is 5 characters)')
       end
 
+      it 'returns a 400 when todo_item key is missing' do
+        post :create, params: { todo_list_id: todo_list.id }, format: :json
+
+        expect(response.status).to eq(400)
+        expect(JSON.parse(response.body)['error']).to include('todo_item')
+      end
+
       it 'does not persist the todo item' do
         expect do
           post :create, params: invalid_params, format: :json

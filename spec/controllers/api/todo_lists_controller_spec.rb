@@ -75,6 +75,13 @@ describe Api::TodoListsController do
         expect(body['errors']).to include("Name can't be blank")
       end
 
+      it 'returns a 400 when todo_list key is missing' do
+        post :create, params: {}, format: :json
+
+        expect(response.status).to eq(400)
+        expect(JSON.parse(response.body)['error']).to include('todo_list')
+      end
+
       it 'does not persist the todo list' do
         expect do
           post :create, params: { todo_list: { name: '' } }, format: :json
