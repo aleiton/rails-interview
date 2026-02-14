@@ -4,7 +4,7 @@ module Api
   class TodoListsController < ApplicationController
     skip_before_action :verify_authenticity_token
 
-    before_action :set_todo_list, only: %i[show update destroy]
+    before_action :set_todo_list, only: %i[show update destroy complete_all]
 
     # GET /api/todolists
     def index
@@ -44,6 +44,13 @@ module Api
           format.json { render json: { errors: @todo_list.errors.full_messages }, status: :unprocessable_entity }
         end
       end
+    end
+
+    # POST /api/todolists/:id/complete_all
+    def complete_all
+      CompleteAllItemsJob.perform_later(@todo_list.id)
+
+      head :accepted
     end
 
     # DELETE /api/todolists/:id
