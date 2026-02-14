@@ -30,7 +30,7 @@ describe Api::TodoItemsController do
         get :index, params: { todo_list_id: 0 }, format: :json
 
         expect(response.status).to eq(404)
-        expect(JSON.parse(response.body)['error']).to eq('Record not found')
+        expect(JSON.parse(response.body)['errors']).to include('Record not found')
       end
     end
   end
@@ -79,7 +79,7 @@ describe Api::TodoItemsController do
         post :create, params: { todo_list_id: todo_list.id }, format: :json
 
         expect(response.status).to eq(400)
-        expect(JSON.parse(response.body)['error']).to include('todo_item')
+        expect(JSON.parse(response.body)['errors'].first).to include('todo_item')
       end
 
       it 'does not persist the todo item' do
@@ -132,7 +132,7 @@ describe Api::TodoItemsController do
               format: :json
 
         expect(response.status).to eq(404)
-        expect(JSON.parse(response.body)['error']).to eq('Record not found')
+        expect(JSON.parse(response.body)['errors']).to include('Record not found')
       end
     end
   end
@@ -159,7 +159,7 @@ describe Api::TodoItemsController do
         delete :destroy, params: { todo_list_id: todo_list.id, id: 0 }, format: :json
 
         expect(response.status).to eq(404)
-        expect(JSON.parse(response.body)['error']).to eq('Record not found')
+        expect(JSON.parse(response.body)['errors']).to include('Record not found')
       end
     end
   end

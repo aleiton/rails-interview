@@ -40,7 +40,7 @@ describe Api::TodoListsController do
         get :show, params: { id: 0 }, format: :json
 
         expect(response.status).to eq(404)
-        expect(JSON.parse(response.body)['error']).to eq('Record not found')
+        expect(JSON.parse(response.body)['errors']).to include('Record not found')
       end
     end
   end
@@ -79,7 +79,7 @@ describe Api::TodoListsController do
         post :create, params: {}, format: :json
 
         expect(response.status).to eq(400)
-        expect(JSON.parse(response.body)['error']).to include('todo_list')
+        expect(JSON.parse(response.body)['errors'].first).to include('todo_list')
       end
 
       it 'does not persist the todo list' do
@@ -122,7 +122,7 @@ describe Api::TodoListsController do
         patch :update, params: { id: 0, todo_list: { name: 'Nope' } }, format: :json
 
         expect(response.status).to eq(404)
-        expect(JSON.parse(response.body)['error']).to eq('Record not found')
+        expect(JSON.parse(response.body)['errors']).to include('Record not found')
       end
     end
   end
@@ -150,7 +150,7 @@ describe Api::TodoListsController do
         delete :destroy, params: { id: 0 }, format: :json
 
         expect(response.status).to eq(404)
-        expect(JSON.parse(response.body)['error']).to eq('Record not found')
+        expect(JSON.parse(response.body)['errors']).to include('Record not found')
       end
     end
   end

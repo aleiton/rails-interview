@@ -10,10 +10,10 @@ class ApplicationController < ActionController::Base
   end
 
   def record_not_found
-    render json: { error: 'Record not found' }, status: :not_found
+    render json: { errors: ['Record not found'] }, status: :not_found
   end
 
   def bad_request(exception)
-    render json: { error: exception.message }, status: :bad_request
+    render json: { errors: [exception.message] }, status: :bad_request
   end
 end
