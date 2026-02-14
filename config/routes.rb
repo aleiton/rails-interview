@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount ActionCable.server => "/cable"
+
   namespace :api do
     resources :todo_lists, only: %i[index show create update destroy], path: :todolists do
       resources :todo_items, only: %i[index create update destroy], path: :todoitems
