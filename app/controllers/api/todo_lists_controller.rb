@@ -35,7 +35,7 @@ module Api
     def update
       if @todo_list.update(todo_list_params)
         respond_to do |format|
-          format.json { render :show, status: :ok }
+          format.json { render :show }
         end
       else
         respond_to do |format|
