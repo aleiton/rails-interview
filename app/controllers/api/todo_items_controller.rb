@@ -60,9 +60,5 @@ module Api
     def todo_item_params
       params.require(:todo_item).permit(:description, :completed)
     end
-
-    def record_not_found
-      render json: { error: 'Record not found' }, status: :not_found
-    end
   end
 end
