@@ -26,6 +26,10 @@ gem "stimulus-rails"
 gem "jbuilder"
 gem "rack-cors"
 
+# HTTP client for external API sync
+gem "faraday", "~> 2.7"
+gem "faraday-retry", "~> 2.2"
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 
@@ -57,6 +61,7 @@ group :development do
   gem "web-console"
 
   gem "rspec-rails"
+  gem "webrick"
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
@@ -71,4 +76,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "webdrivers"
+  gem "webmock", "~> 3.19"
 end

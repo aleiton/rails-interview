@@ -4,4 +4,7 @@ class TodoItem < ApplicationRecord
   belongs_to :todo_list
 
   validates :description, length: { minimum: 5 }
+
+  scope :synced, -> { where.not(external_id: nil) }
+  scope :unsynced, -> { where(external_id: nil) }
 end
