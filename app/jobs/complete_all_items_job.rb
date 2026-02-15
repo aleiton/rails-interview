@@ -34,12 +34,14 @@ class CompleteAllItemsJob < ApplicationJob
     start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
     incomplete_items(todo_list).in_batches(of: BATCH_SIZE) do |batch|
+      batch_ids = batch.pluck(:id)
       batch.update_all(completed: true)
       completed_count = total - incomplete_items(todo_list).count
       percentage = (completed_count / total.to_f * PERCENTAGE_SCALE).round(1)
 
       Rails.logger.info("#{LOG_TAG} Progress: #{completed_count}/#{total} (#{percentage}%)")
-      self.class.broadcast(todo_list_id, action: "progress", completed: completed_count, total: total)
+      self.class.broadcast(todo_list_id, action: "progress", completed: completed_count, total: total,
+                                         completed_ids: batch_ids)
     end
 
     elapsed = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time).round(1)
