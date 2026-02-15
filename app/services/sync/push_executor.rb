@@ -32,13 +32,13 @@ module Sync
       now = Time.current
 
       list = TodoList.find(local[:id])
-      list.update!(external_id: result["id"], synced_at: now)
+      list.update_columns(external_id: result["id"], synced_at: now)
 
       (result["items"] || []).each do |ext_item|
         next if ext_item["source_id"].blank?
 
         item = list.todo_items.find_by(id: ext_item["source_id"])
-        item&.update!(external_id: ext_item["id"], synced_at: now)
+        item&.update_columns(external_id: ext_item["id"], synced_at: now)
       end
     rescue StandardError => e
       record_error(:push_create, local[:id], e)
@@ -51,7 +51,7 @@ module Sync
 
       now = Time.current
       list = TodoList.find(local[:id])
-      list.update!(synced_at: now)
+      list.update_column(:synced_at, now)
       list.todo_items.synced.update_all(synced_at: now)
     rescue StandardError => e
       record_error(:push_update, ext[:external_id], e)

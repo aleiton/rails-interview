@@ -23,24 +23,26 @@ module Sync
     private
 
     def create_list(ext)
-      now = Time.current
+      list = nil
 
       ActiveRecord::Base.transaction do
         list = TodoList.create!(
           name: ext[:name],
-          external_id: ext[:external_id],
-          synced_at: now
+          external_id: ext[:external_id]
         )
 
         ext[:items].each do |ext_item|
           list.todo_items.create!(
             description: ext_item[:description],
             completed: ext_item[:completed] || false,
-            external_id: ext_item[:external_id],
-            synced_at: now
+            external_id: ext_item[:external_id]
           )
         end
       end
+
+      now = Time.current
+      list.update_column(:synced_at, now)
+      list.todo_items.update_all(synced_at: now)
     rescue StandardError => e
       Rails.logger.error("#{LOG_TAG} pull_create failed for #{ext[:external_id]}: #{e.message}")
       @errors << { action: :pull_create, external_id: ext[:external_id], error: e.message }
@@ -51,7 +53,8 @@ module Sync
 
       ActiveRecord::Base.transaction do
         list = TodoList.find(local[:id])
-        list.update!(name: ext[:name], synced_at: now)
+        list.update!(name: ext[:name])
+        list.update_column(:synced_at, now)
 
         sync_items(list, ext[:items], local[:items], now)
       end
@@ -76,18 +79,16 @@ module Sync
         local_item = local_by_ext_id[ext_item[:external_id]]
 
         if local_item
-          TodoItem.find(local_item[:id]).update!(
-            description: ext_item[:description],
-            completed: ext_item[:completed] || false,
-            synced_at: now
-          )
+          item = TodoItem.find(local_item[:id])
+          item.update!(description: ext_item[:description], completed: ext_item[:completed] || false)
+          item.update_column(:synced_at, now)
         else
-          list.todo_items.create!(
+          new_item = list.todo_items.create!(
             description: ext_item[:description],
             completed: ext_item[:completed] || false,
-            external_id: ext_item[:external_id],
-            synced_at: now
+            external_id: ext_item[:external_id]
           )
+          new_item.update_column(:synced_at, now)
         end
       end
 
