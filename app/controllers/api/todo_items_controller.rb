@@ -7,9 +7,19 @@ module Api
     before_action :set_todo_list
     before_action :set_todo_item, only: %i[update destroy]
 
+    DEFAULT_PER_PAGE = 50
+    MAX_PER_PAGE = 100
+
     # GET /api/todolists/:todo_list_id/todoitems
     def index
-      @todo_items = @todo_list.todo_items
+      @page = [(params[:page] || 1).to_i, 1].max
+      @per_page = [[(params[:per_page] || DEFAULT_PER_PAGE).to_i, 1].max, MAX_PER_PAGE].min
+
+      base_scope = @todo_list.todo_items.order(created_at: :asc, id: :asc)
+      @total_count = base_scope.count
+      @total_pages = [(@total_count / @per_page.to_f).ceil, 1].max
+
+      @todo_items = base_scope.offset((@page - 1) * @per_page).limit(@per_page)
 
       respond_to :json
     end

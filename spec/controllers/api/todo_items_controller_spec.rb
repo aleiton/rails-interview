@@ -10,19 +10,55 @@ describe Api::TodoItemsController do
   describe 'GET index' do
     let!(:todo_item) { TodoItem.create!(description: 'Do dishes', completed: false, todo_list: todo_list) }
 
-    it 'returns the todo items as JSON' do
+    it 'returns the todo items in paginated envelope' do
       get :index, params: { todo_list_id: todo_list.id }, format: :json
 
       expect(response.status).to eq(200)
       expect(response.content_type).to include('application/json')
-      expect(response.body).to eq([{
-        id: todo_item.id,
-        description: 'Do dishes',
-        completed: false,
-        todo_list_id: todo_list.id,
-        created_at: todo_item.created_at.as_json,
-        updated_at: todo_item.updated_at.as_json
-      }].to_json)
+
+      body = JSON.parse(response.body)
+
+      expect(body['items']).to eq([{
+        'id' => todo_item.id,
+        'description' => 'Do dishes',
+        'completed' => false,
+        'todo_list_id' => todo_list.id,
+        'created_at' => todo_item.created_at.as_json,
+        'updated_at' => todo_item.updated_at.as_json
+      }])
+
+      expect(body['meta']).to eq({
+        'page' => 1,
+        'per_page' => 50,
+        'total_count' => 1,
+        'total_pages' => 1
+      })
+    end
+
+    context 'with pagination params' do
+      before do
+        TodoItem.create!(description: 'Item two here', completed: false, todo_list: todo_list)
+        TodoItem.create!(description: 'Item three here', completed: false, todo_list: todo_list)
+      end
+
+      it 'returns the requested page with correct meta' do
+        get :index, params: { todo_list_id: todo_list.id, page: 2, per_page: 1 }, format: :json
+
+        body = JSON.parse(response.body)
+        expect(body['items'].length).to eq(1)
+        expect(body['meta']['page']).to eq(2)
+        expect(body['meta']['per_page']).to eq(1)
+        expect(body['meta']['total_count']).to eq(3)
+        expect(body['meta']['total_pages']).to eq(3)
+      end
+
+      it 'returns an empty items array when page is beyond total pages' do
+        get :index, params: { todo_list_id: todo_list.id, page: 99, per_page: 50 }, format: :json
+
+        body = JSON.parse(response.body)
+        expect(body['items']).to eq([])
+        expect(body['meta']['page']).to eq(99)
+      end
     end
 
     context 'when the todo list does not exist' do
