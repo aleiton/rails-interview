@@ -55,7 +55,7 @@ class TodoItemsController < ApplicationController
     @todo_item.update!(completed: !@todo_item.completed)
 
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream.replace(@todo_item) }
+      format.turbo_stream
       format.html { redirect_to @todo_list }
     end
   end

@@ -22,8 +22,8 @@
     <span data-inline-edit-target="display"
           data-description
           data-action="dblclick->inline-edit#edit"
-          class="text-sm cursor-default block truncate
-                 <%= todo_item.completed? ? 'line-through text-gray-400' : 'text-gray-800' %>">
+          class="text-sm block truncate
+                 <%= todo_item.completed? ? 'line-through text-gray-400 cursor-default' : 'text-gray-800 cursor-pointer hover:underline hover:decoration-dashed hover:decoration-primary' %>">
       <%= todo_item.description %>
     </span>
 

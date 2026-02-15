@@ -3,3 +3,7 @@
 <%= turbo_stream.update "item_count" do %>
   (<%= @todo_list.todo_items.count %>)
 <% end %>
+
+<%= turbo_stream.replace "complete_all_button" do %>
+  <%= render "todo_lists/complete_all_button", todo_list: @todo_list %>
+<% end %>

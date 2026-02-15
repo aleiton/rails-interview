@@ -8,6 +8,15 @@ export default class extends Controller {
     const clicked = event.target.closest("[data-list-nav-target='item']")
     if (!clicked) return
 
+    // Close sidebar on mobile
+    const sidebar = document.querySelector("[data-controller='sidebar']")
+    if (sidebar && window.innerWidth < 768) {
+      const panel = sidebar.querySelector("[data-sidebar-target='panel']")
+      const overlay = sidebar.querySelector("[data-sidebar-target='overlay']")
+      if (panel) panel.classList.add("-translate-x-full")
+      if (overlay) overlay.classList.add("hidden")
+    }
+
     this.itemTargets.forEach(item => {
       const link = item.querySelector("[data-list-link]")
 

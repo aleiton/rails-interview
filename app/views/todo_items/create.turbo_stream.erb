@@ -7,6 +7,10 @@
   (<%= @todo_list.todo_items.count %>)
 <% end %>
 
+<%= turbo_stream.replace "complete_all_button" do %>
+  <%= render "todo_lists/complete_all_button", todo_list: @todo_list %>
+<% end %>
+
 <%= turbo_stream.replace "new_item_form" do %>
   <div class="mb-6" id="new_item_form">
     <%= form_with model: [@todo_list, TodoItem.new],

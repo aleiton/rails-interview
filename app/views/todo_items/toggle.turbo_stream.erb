@@ -1,0 +1,12 @@
+<%= turbo_stream.replace dom_id(@todo_item) do %>
+  <%= render partial: "todo_items/todo_item",
+             locals: { todo_item: @todo_item } %>
+<% end %>
+
+<%= turbo_stream.replace "complete_all_button" do %>
+  <%= render "todo_lists/complete_all_button", todo_list: @todo_list %>
+<% end %>
+
+<%= turbo_stream.update "item_count" do %>
+  (<%= @todo_list.todo_items.count %>)
+<% end %>

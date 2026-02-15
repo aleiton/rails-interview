@@ -11,27 +11,7 @@
       </h2>
     </div>
 
-    <% incomplete_count = todo_list.todo_items.where(completed: false).count %>
-    <% if incomplete_count > 0 %>
-      <button class="bg-green hover:bg-green/80 text-white px-4 py-2 rounded
-                     text-sm font-medium cursor-pointer w-full md:w-auto"
-              data-action="click->complete-all#start"
-              data-complete-all-target="button">
-        Complete All (<%= incomplete_count %>)
-      </button>
-    <% end %>
-  </div>
-
-  <div class="mb-4 hidden" data-complete-all-target="progressContainer">
-    <div class="w-full bg-gray-200 rounded-full h-3">
-      <div class="bg-green h-3 rounded-full transition-all duration-300"
-           style="width: 0%"
-           data-complete-all-target="progressBar">
-      </div>
-    </div>
-    <p class="text-sm text-gray-500 mt-1" data-complete-all-target="progressText">
-      Completing items...
-    </p>
+    <%= render "complete_all_button", todo_list: todo_list %>
   </div>
 
   <div class="mb-6" id="new_item_form">
