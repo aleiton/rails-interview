@@ -31,7 +31,8 @@ describe Api::TodoItemsController do
         'page' => 1,
         'per_page' => 50,
         'total_count' => 1,
-        'total_pages' => 1
+        'total_pages' => 1,
+        'incomplete_count' => 1
       })
     end
 

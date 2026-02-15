@@ -5,4 +5,5 @@ json.meta do
   json.per_page @per_page
   json.total_count @total_count
   json.total_pages @total_pages
+  json.incomplete_count @incomplete_count
 end

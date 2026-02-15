@@ -17,6 +17,7 @@ module Api
 
       base_scope = @todo_list.todo_items.order(created_at: :asc, id: :asc)
       @total_count = base_scope.count
+      @incomplete_count = @todo_list.todo_items.where(completed: false).count
       @total_pages = [(@total_count / @per_page.to_f).ceil, 1].max
 
       @todo_items = base_scope.offset((@page - 1) * @per_page).limit(@per_page)
