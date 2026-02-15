@@ -1,5 +1,5 @@
 <%= turbo_stream.remove dom_id(@todo_item) %>
 
 <%= turbo_stream.update "item_count" do %>
-  <%= pluralize(@todo_list.todo_items.count, "item") %>
+  (<%= @todo_list.todo_items.count %>)
 <% end %>

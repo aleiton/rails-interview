@@ -3,7 +3,7 @@
             border border-gray-100 group" do %>
 
   <%= button_to toggle_todo_list_todo_item_path(todo_item.todo_list, todo_item),
-      method: :patch, class: "flex-shrink-0" do %>
+      method: :patch, class: "flex-shrink-0 cursor-pointer" do %>
     <div data-checkbox class="w-5 h-5 rounded border-2 flex items-center justify-center
                 <%= todo_item.completed? ? 'bg-green border-green' : 'border-gray-300 hover:border-primary' %>">
       <% if todo_item.completed? %>
@@ -41,7 +41,7 @@
 
   <%= button_to todo_list_todo_item_path(todo_item.todo_list, todo_item),
       method: :delete,
-      class: "opacity-0 group-hover:opacity-100 transition flex-shrink-0" do %>
+      class: "md:opacity-0 md:group-hover:opacity-100 transition flex-shrink-0 cursor-pointer" do %>
     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-coral" fill="none"
          viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

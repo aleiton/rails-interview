@@ -4,7 +4,7 @@
 <% end %>
 
 <%= turbo_stream.update "item_count" do %>
-  <%= pluralize(@todo_list.todo_items.count, "item") %>
+  (<%= @todo_list.todo_items.count %>)
 <% end %>
 
 <%= turbo_stream.replace "new_item_form" do %>

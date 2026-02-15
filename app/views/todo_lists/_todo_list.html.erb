@@ -1,4 +1,5 @@
 <%= tag.div id: dom_id(todo_list),
+    data: { list_nav_target: "item", action: "click->list-nav#select" },
     class: "group flex items-center justify-between px-4 py-3 hover:bg-gray-700/50
             #{todo_list == selected_list ? 'bg-primary/20 border-l-4 border-primary' : 'border-l-4 border-transparent'}" do %>
 
@@ -10,7 +11,7 @@
     <span data-inline-edit-target="display"
           data-action="dblclick->inline-edit#edit">
       <%= link_to todo_list.name, todo_list_by_slug_path(todo_list.to_param),
-          data: { turbo_frame: "main_content", turbo_action: "advance" },
+          data: { turbo_frame: "main_content", turbo_action: "advance", list_link: true },
           class: "text-sm truncate block #{todo_list == selected_list ? 'text-white font-semibold' : 'text-gray-300'}" %>
     </span>
 
@@ -25,7 +26,7 @@
   </div>
 
   <%= button_to todo_list_path(todo_list), method: :delete,
-      class: "ml-2 opacity-0 group-hover:opacity-100 transition flex-shrink-0",
+      class: "ml-2 md:opacity-0 md:group-hover:opacity-100 transition flex-shrink-0 cursor-pointer",
       form: { data: { turbo_confirm: "Delete '#{todo_list.name}'?" } } do %>
     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-coral" fill="none"
          viewBox="0 0 24 24" stroke="currentColor">

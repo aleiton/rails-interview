@@ -1,20 +1,20 @@
-<div class="max-w-3xl mx-auto p-8"
+<div class="max-w-3xl mx-auto p-6 pt-16 md:pt-6"
      data-controller="complete-all"
      data-complete-all-list-id-value="<%= todo_list.id %>"
      data-complete-all-list-slug-value="<%= todo_list.to_param %>">
 
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-3">
     <div>
-      <h2 class="text-2xl font-bold text-gray-800"><%= todo_list.name %></h2>
-      <p class="text-sm text-gray-500" id="item_count">
-        <%= pluralize(todo_list.todo_items.count, "item") %>
-      </p>
+      <h2 class="text-2xl font-bold text-gray-800">
+        <%= todo_list.name %>
+        <span class="text-sm font-normal text-gray-500" id="item_count">(<%= todo_list.todo_items.count %>)</span>
+      </h2>
     </div>
 
     <% incomplete_count = todo_list.todo_items.where(completed: false).count %>
     <% if incomplete_count > 0 %>
       <button class="bg-green hover:bg-green/80 text-white px-4 py-2 rounded
-                     text-sm font-medium cursor-pointer"
+                     text-sm font-medium cursor-pointer w-full md:w-auto"
               data-action="click->complete-all#start"
               data-complete-all-target="button">
         Complete All (<%= incomplete_count %>)

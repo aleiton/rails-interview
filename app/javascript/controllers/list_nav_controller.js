@@ -1,0 +1,31 @@
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = ["item"]
+  static classes = ["active", "inactive", "activeText", "inactiveText"]
+
+  select(event) {
+    const clicked = event.target.closest("[data-list-nav-target='item']")
+    if (!clicked) return
+
+    this.itemTargets.forEach(item => {
+      const link = item.querySelector("[data-list-link]")
+
+      if (item === clicked) {
+        item.classList.add("bg-primary/20", "border-primary")
+        item.classList.remove("border-transparent")
+        if (link) {
+          link.classList.add("text-white", "font-semibold")
+          link.classList.remove("text-gray-300")
+        }
+      } else {
+        item.classList.remove("bg-primary/20", "border-primary")
+        item.classList.add("border-transparent")
+        if (link) {
+          link.classList.remove("text-white", "font-semibold")
+          link.classList.add("text-gray-300")
+        }
+      }
+    })
+  }
+}
