@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TodoListsController < ApplicationController
-  before_action :set_todo_list, only: %i[show edit update destroy complete_all]
+  before_action :set_todo_list, only: %i[show update destroy complete_all]
 
   def index
     @todo_lists = TodoList.order(:name)
@@ -10,11 +10,6 @@ class TodoListsController < ApplicationController
 
   def show
     @todo_lists = TodoList.order(:name)
-  end
-
-  def new
-    @todo_lists = TodoList.order(:name)
-    @todo_list = TodoList.new
   end
 
   def create
@@ -26,13 +21,18 @@ class TodoListsController < ApplicationController
         format.html { redirect_to @todo_list }
       end
     else
-      @todo_lists = TodoList.order(:name)
-      render :new, status: :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace("new_todo_list",
+            partial: "todo_lists/form_with_errors",
+            locals: { todo_list: @todo_list })
+        end
+        format.html do
+          @todo_lists = TodoList.order(:name)
+          render :index, status: :unprocessable_entity
+        end
+      end
     end
-  end
-
-  def edit
-    @todo_lists = TodoList.order(:name)
   end
 
   def update
@@ -42,8 +42,17 @@ class TodoListsController < ApplicationController
         format.html { redirect_to @todo_list }
       end
     else
-      @todo_lists = TodoList.order(:name)
-      render :edit, status: :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(dom_id(@todo_list),
+            partial: "todo_lists/todo_list",
+            locals: { todo_list: @todo_list, selected_list: @todo_list })
+        end
+        format.html do
+          @todo_lists = TodoList.order(:name)
+          render :index, status: :unprocessable_entity
+        end
+      end
     end
   end
 
@@ -58,7 +67,11 @@ class TodoListsController < ApplicationController
 
   def complete_all
     CompleteAllItemsJob.perform_later(@todo_list.id)
-    redirect_to @todo_list, notice: "Completing all items..."
+
+    respond_to do |format|
+      format.turbo_stream { head :ok }
+      format.html { redirect_to @todo_list, notice: "Completing all items..." }
+    end
   end
 
   private

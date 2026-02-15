@@ -1,0 +1,19 @@
+<%= turbo_stream.append "todo_lists" do %>
+  <%= render partial: "todo_lists/todo_list",
+             locals: { todo_list: @todo_list, selected_list: @todo_list } %>
+<% end %>
+
+<%= turbo_stream.update "main_content" do %>
+  <%= render "main_content", todo_list: @todo_list %>
+<% end %>
+
+<%= turbo_stream.replace "new_todo_list" do %>
+  <%= form_with model: TodoList.new, url: todo_lists_path, id: "new_todo_list", class: "flex gap-2" do |f| %>
+    <%= f.text_field :name, placeholder: "New list name...",
+        class: "flex-1 bg-gray-700 text-white rounded px-3 py-2 text-sm
+               placeholder-gray-400 focus:outline-none focus:ring-2
+               focus:ring-primary" %>
+    <%= f.submit "Add", class: "bg-primary hover:bg-primary/80 text-white
+                                px-4 py-2 rounded text-sm cursor-pointer" %>
+  <% end %>
+<% end %>

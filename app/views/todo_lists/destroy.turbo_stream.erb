@@ -1,0 +1,12 @@
+<%= turbo_stream.remove dom_id(@todo_list) %>
+
+<%= turbo_stream.update "main_content" do %>
+  <% first_list = TodoList.order(:name).first %>
+  <% if first_list %>
+    <%= render "main_content", todo_list: first_list %>
+  <% else %>
+    <div class="flex items-center justify-center h-full text-gray-400 pt-20">
+      <p class="text-lg">Create a todo list to get started</p>
+    </div>
+  <% end %>
+<% end %>

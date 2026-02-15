@@ -13,7 +13,14 @@ class TodoItemsController < ApplicationController
         format.html { redirect_to @todo_list }
       end
     else
-      redirect_to @todo_list, alert: @todo_item.errors.full_messages.join(", ")
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace("new_item_form",
+            partial: "todo_items/form_with_errors",
+            locals: { todo_list: @todo_list, todo_item: @todo_item })
+        end
+        format.html { redirect_to @todo_list, alert: @todo_item.errors.full_messages.join(", ") }
+      end
     end
   end
 
@@ -24,7 +31,14 @@ class TodoItemsController < ApplicationController
         format.html { redirect_to @todo_list }
       end
     else
-      redirect_to @todo_list, alert: @todo_item.errors.full_messages.join(", ")
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(dom_id(@todo_item),
+            partial: "todo_items/todo_item",
+            locals: { todo_item: @todo_item })
+        end
+        format.html { redirect_to @todo_list, alert: @todo_item.errors.full_messages.join(", ") }
+      end
     end
   end
 

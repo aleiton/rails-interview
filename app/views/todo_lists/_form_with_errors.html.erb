@@ -1,0 +1,13 @@
+<%= form_with model: todo_list, url: todo_lists_path, id: "new_todo_list", class: "flex flex-col gap-2" do |f| %>
+  <div class="flex gap-2">
+    <%= f.text_field :name, placeholder: "New list name...",
+        class: "flex-1 bg-gray-700 text-white rounded px-3 py-2 text-sm
+               placeholder-gray-400 focus:outline-none focus:ring-2
+               focus:ring-coral border border-coral" %>
+    <%= f.submit "Add", class: "bg-primary hover:bg-primary/80 text-white
+                                px-4 py-2 rounded text-sm cursor-pointer" %>
+  </div>
+  <% if todo_list.errors.any? %>
+    <p class="text-coral text-xs"><%= todo_list.errors.full_messages.first %></p>
+  <% end %>
+<% end %>

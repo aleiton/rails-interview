@@ -1,0 +1,22 @@
+<%= turbo_stream.prepend "todo_items" do %>
+  <%= render partial: "todo_items/todo_item",
+             locals: { todo_item: @todo_item } %>
+<% end %>
+
+<%= turbo_stream.update "item_count" do %>
+  <%= pluralize(@todo_list.todo_items.count, "item") %>
+<% end %>
+
+<%= turbo_stream.replace "new_item_form" do %>
+  <%= form_with model: [@todo_list, TodoItem.new],
+      url: todo_list_todo_items_path(@todo_list),
+      id: "new_item_form", class: "flex gap-2" do |f| %>
+    <%= f.text_field :description, placeholder: "Add a new item...",
+        class: "flex-1 border border-gray-300 rounded px-4 py-2 text-sm
+               focus:outline-none focus:ring-2 focus:ring-primary
+               focus:border-transparent" %>
+    <%= f.submit "Add",
+        class: "bg-primary hover:bg-primary/80 text-white px-6 py-2
+               rounded text-sm font-medium cursor-pointer" %>
+  <% end %>
+<% end %>
