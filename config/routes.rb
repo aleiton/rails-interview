@@ -22,4 +22,6 @@ Rails.application.routes.draw do
   end
 
   root "todo_lists#index"
+
+  match "*unmatched", to: "errors#not_found", via: :all
 end

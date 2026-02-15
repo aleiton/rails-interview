@@ -64,7 +64,7 @@ class TodoListsController < ApplicationController
   private
 
   def set_todo_list
-    @todo_list = TodoList.find(params[:id])
+    @todo_list = TodoList.find_by_slug!(params[:id])
   end
 
   def todo_list_params

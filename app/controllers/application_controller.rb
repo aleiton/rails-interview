@@ -12,10 +12,18 @@ class ApplicationController < ActionController::Base
   end
 
   def record_not_found
-    render json: { errors: ['Record not found'] }, status: :not_found
+    respond_to do |format|
+      format.json { render json: { errors: ['Record not found'] }, status: :not_found }
+      format.html { render "errors/not_found", status: :not_found, layout: "application" }
+      format.turbo_stream { head :not_found }
+    end
   end
 
   def bad_request(exception)
-    render json: { errors: [exception.message] }, status: :bad_request
+    respond_to do |format|
+      format.json { render json: { errors: [exception.message] }, status: :bad_request }
+      format.html { redirect_to root_path, alert: exception.message }
+      format.turbo_stream { head :bad_request }
+    end
   end
 end
