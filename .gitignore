@@ -42,3 +42,6 @@ mise.toml
 
 # Ignore nested clone artifacts.
 /rails-interview
+
+/app/assets/builds/*
+!/app/assets/builds/.keep
