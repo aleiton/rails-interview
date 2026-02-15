@@ -45,6 +45,7 @@ describe Api::TodoItemsController do
         get :index, params: { todo_list_id: todo_list.id, page: 2, per_page: 1 }, format: :json
 
         body = JSON.parse(response.body)
+
         expect(body['items'].length).to eq(1)
         expect(body['meta']['page']).to eq(2)
         expect(body['meta']['per_page']).to eq(1)
@@ -56,6 +57,7 @@ describe Api::TodoItemsController do
         get :index, params: { todo_list_id: todo_list.id, page: 99, per_page: 50 }, format: :json
 
         body = JSON.parse(response.body)
+
         expect(body['items']).to eq([])
         expect(body['meta']['page']).to eq(99)
       end
