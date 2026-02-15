@@ -10,5 +10,16 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :todo_lists, only: %i[index new], path: :todolists
+  resources :todo_lists, path: :todolists do
+    member do
+      post :complete_all
+    end
+    resources :todo_items, path: :todoitems, only: %i[create update destroy] do
+      member do
+        patch :toggle
+      end
+    end
+  end
+
+  root "todo_lists#index"
 end

@@ -1,0 +1,36 @@
+<%= tag.div id: dom_id(todo_list),
+    class: "group flex items-center justify-between px-4 py-3 hover:bg-gray-700/50
+            #{todo_list == selected_list ? 'bg-primary/20 border-l-4 border-primary' : 'border-l-4 border-transparent'}" do %>
+
+  <div class="flex-1 min-w-0"
+       data-controller="inline-edit"
+       data-inline-edit-url-value="<%= todo_list_path(todo_list) %>"
+       data-inline-edit-field-value="todo_list[name]">
+
+    <span data-inline-edit-target="display"
+          data-action="dblclick->inline-edit#edit">
+      <%= link_to todo_list.name, todo_list_path(todo_list),
+          data: { turbo_frame: "main_content" },
+          class: "text-sm truncate block #{todo_list == selected_list ? 'text-white font-semibold' : 'text-gray-300'}" %>
+    </span>
+
+    <form data-inline-edit-target="form" class="hidden"
+          data-action="submit->inline-edit#save">
+      <input type="text" value="<%= todo_list.name %>"
+             data-inline-edit-target="input"
+             data-action="blur->inline-edit#save keydown.escape->inline-edit#cancel"
+             class="w-full bg-gray-700 text-white rounded px-2 py-1 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-primary">
+    </form>
+  </div>
+
+  <%= button_to todo_list_path(todo_list), method: :delete,
+      class: "ml-2 opacity-0 group-hover:opacity-100 transition flex-shrink-0",
+      form: { data: { turbo_confirm: "Delete '#{todo_list.name}'?" } } do %>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-coral" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  <% end %>
+<% end %>

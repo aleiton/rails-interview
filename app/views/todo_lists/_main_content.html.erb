@@ -1,0 +1,54 @@
+<div class="max-w-3xl mx-auto p-8"
+     data-controller="complete-all"
+     data-complete-all-list-id-value="<%= todo_list.id %>">
+
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800"><%= todo_list.name %></h2>
+      <p class="text-sm text-gray-500" id="item_count">
+        <%= pluralize(todo_list.todo_items.count, "item") %>
+      </p>
+    </div>
+
+    <% incomplete_count = todo_list.todo_items.where(completed: false).count %>
+    <% if incomplete_count > 0 %>
+      <button class="bg-green hover:bg-green/80 text-white px-4 py-2 rounded
+                     text-sm font-medium cursor-pointer"
+              data-action="click->complete-all#start"
+              data-complete-all-target="button">
+        Complete All (<%= incomplete_count %>)
+      </button>
+    <% end %>
+  </div>
+
+  <div class="mb-4 hidden" data-complete-all-target="progressContainer">
+    <div class="w-full bg-gray-200 rounded-full h-3">
+      <div class="bg-green h-3 rounded-full transition-all duration-300"
+           style="width: 0%"
+           data-complete-all-target="progressBar">
+      </div>
+    </div>
+    <p class="text-sm text-gray-500 mt-1" data-complete-all-target="progressText">
+      Completing items...
+    </p>
+  </div>
+
+  <div class="mb-6">
+    <%= form_with model: [todo_list, TodoItem.new],
+        url: todo_list_todo_items_path(todo_list),
+        id: "new_item_form", class: "flex gap-2" do |f| %>
+      <%= f.text_field :description, placeholder: "Add a new item...",
+          class: "flex-1 border border-gray-300 rounded px-4 py-2 text-sm
+                 focus:outline-none focus:ring-2 focus:ring-primary
+                 focus:border-transparent" %>
+      <%= f.submit "Add",
+          class: "bg-primary hover:bg-primary/80 text-white px-6 py-2
+                 rounded text-sm font-medium cursor-pointer" %>
+    <% end %>
+  </div>
+
+  <div id="todo_items" class="space-y-2">
+    <%= render partial: "todo_items/todo_item",
+               collection: todo_list.todo_items.order(created_at: :desc) %>
+  </div>
+</div>

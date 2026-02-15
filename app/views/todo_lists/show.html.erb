@@ -23,13 +23,7 @@
     </button>
 
     <turbo-frame id="main_content">
-      <% if @todo_list %>
-        <%= render "main_content", todo_list: @todo_list %>
-      <% else %>
-        <div class="flex items-center justify-center h-full text-gray-400 pt-20">
-          <p class="text-lg">Create a todo list to get started</p>
-        </div>
-      <% end %>
+      <%= render "main_content", todo_list: @todo_list %>
     </turbo-frame>
   </main>
 </div>
