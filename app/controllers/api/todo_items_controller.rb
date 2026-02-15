@@ -12,15 +12,17 @@ module Api
 
     # GET /api/todolists/:todo_list_id/todoitems
     def index
-      @page = [(params[:page] || 1).to_i, 1].max
       @per_page = [[(params[:per_page] || DEFAULT_PER_PAGE).to_i, 1].max, MAX_PER_PAGE].min
 
-      base_scope = @todo_list.todo_items.order(created_at: :asc, id: :asc)
+      base_scope = @todo_list.todo_items.order(id: :asc)
       @total_count = base_scope.count
       @incomplete_count = @todo_list.todo_items.where(completed: false).count
-      @total_pages = [(@total_count / @per_page.to_f).ceil, 1].max
 
-      @todo_items = base_scope.offset((@page - 1) * @per_page).limit(@per_page)
+      scope = params[:after_id].present? ? base_scope.where("id > ?", params[:after_id].to_i) : base_scope
+      all_items = scope.limit(@per_page + 1).to_a
+      @has_next_page = all_items.length > @per_page
+      @todo_items = all_items.first(@per_page)
+      @next_cursor = @todo_items.last&.id
 
       respond_to :json
     end

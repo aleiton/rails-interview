@@ -10,7 +10,7 @@ describe Api::TodoItemsController do
   describe 'GET index' do
     let!(:todo_item) { TodoItem.create!(description: 'Do dishes', completed: false, todo_list: todo_list) }
 
-    it 'returns the todo items in paginated envelope' do
+    it 'returns the todo items in cursor-paginated envelope' do
       get :index, params: { todo_list_id: todo_list.id }, format: :json
 
       expect(response.status).to eq(200)
@@ -28,39 +28,47 @@ describe Api::TodoItemsController do
       }])
 
       expect(body['meta']).to eq({
-        'page' => 1,
-        'per_page' => 50,
         'total_count' => 1,
-        'total_pages' => 1,
-        'incomplete_count' => 1
+        'incomplete_count' => 1,
+        'has_next_page' => false,
+        'next_cursor' => todo_item.id
       })
     end
 
-    context 'with pagination params' do
-      before do
-        TodoItem.create!(description: 'Item two here', completed: false, todo_list: todo_list)
-        TodoItem.create!(description: 'Item three here', completed: false, todo_list: todo_list)
-      end
+    context 'with cursor pagination' do
+      let!(:item2) { TodoItem.create!(description: 'Item two here', completed: false, todo_list: todo_list) }
+      let!(:item3) { TodoItem.create!(description: 'Item three here', completed: false, todo_list: todo_list) }
 
-      it 'returns the requested page with correct meta' do
-        get :index, params: { todo_list_id: todo_list.id, page: 2, per_page: 1 }, format: :json
+      it 'returns next page using after_id cursor' do
+        get :index, params: { todo_list_id: todo_list.id, after_id: todo_item.id, per_page: 1 }, format: :json
 
         body = JSON.parse(response.body)
 
         expect(body['items'].length).to eq(1)
-        expect(body['meta']['page']).to eq(2)
-        expect(body['meta']['per_page']).to eq(1)
+        expect(body['items'][0]['id']).to eq(item2.id)
         expect(body['meta']['total_count']).to eq(3)
-        expect(body['meta']['total_pages']).to eq(3)
+        expect(body['meta']['has_next_page']).to eq(true)
+        expect(body['meta']['next_cursor']).to eq(item2.id)
       end
 
-      it 'returns an empty items array when page is beyond total pages' do
-        get :index, params: { todo_list_id: todo_list.id, page: 99, per_page: 50 }, format: :json
+      it 'returns has_next_page false on last page' do
+        get :index, params: { todo_list_id: todo_list.id, after_id: item2.id, per_page: 50 }, format: :json
+
+        body = JSON.parse(response.body)
+
+        expect(body['items'].length).to eq(1)
+        expect(body['items'][0]['id']).to eq(item3.id)
+        expect(body['meta']['has_next_page']).to eq(false)
+      end
+
+      it 'returns empty items when cursor is past last item' do
+        get :index, params: { todo_list_id: todo_list.id, after_id: item3.id }, format: :json
 
         body = JSON.parse(response.body)
 
         expect(body['items']).to eq([])
-        expect(body['meta']['page']).to eq(99)
+        expect(body['meta']['has_next_page']).to eq(false)
+        expect(body['meta']['next_cursor']).to be_nil
       end
     end
 
