@@ -1,0 +1,63 @@
+Design Decisions
+================
+
+Why snapshot-diff over event-based sync?
+
+The external API returns all lists in a single GET call with no webhooks or
+change feeds. A full snapshot comparison is the most reliable approach here —
+it catches every difference (creates, updates, deletes) in one pass without
+needing to track events or maintain a changelog.
+
+Why last-write-wins for conflicts?
+
+Simpler than manual merge or operational transforms, and appropriate for a
+todo app where data isn't high-stakes. Ties go to external to avoid losing
+data from the authoritative source. The synced_at timestamp per record lets
+us detect which side changed since the last sync.
+
+Why pull before push?
+
+Pulling external changes first ensures we have the latest state before
+pushing. This reduces stale overwrites when both sides changed.
+
+Why per-record error handling?
+
+One list failing (validation error, network blip) shouldn't block the rest
+of the sync. Errors are collected and returned, not swallowed.
+
+
+Known Limitation
+================
+
+The external API has no standalone item creation endpoint — items can only
+be created with POST /todolists. New items added to already-synced lists
+cannot be pushed individually. A workaround would be to DELETE and re-POST
+the entire list with all items, but that risks losing the external id and
+any external-side references. The safer choice is to log a warning and
+leave those items for the next list-level sync opportunity.
+
+
+Test Strategy
+=============
+
+One test per distinct code path — no redundant coverage. ConflictResolver
+has 6 tests (one per resolution outcome), DiffCalculator has 6 (one per
+diff category), and both executors have 3 each (create, update, delete).
+The Orchestrator has an integration test with stubbed HTTP that exercises
+the full pipeline end-to-end. WebMock stubs replace real HTTP calls so
+tests stay fast and deterministic.
+
+
+How to Run
+==========
+
+1. ruby script/mock_external_api.rb
+2. SYNC_API_BASE_URL=http://localhost:4000 rake sync:run
+3. Run again — second run shows no changes (idempotent)
+4. bundle exec rspec — all tests pass
+
+
+What I'd Add in Production
+===========================
+
+- Scheduled execution with sidekiq-cron instead of manual rake triggers
