@@ -23,5 +23,7 @@ Rails.application.routes.draw do
 
   root "todo_lists#index"
 
+  get ":slug", to: "todo_lists#show", as: :todo_list_by_slug
+
   match "*unmatched", to: "errors#not_found", via: :all
 end
