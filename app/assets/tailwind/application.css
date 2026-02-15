@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source "../../views/**/*.erb";
+@source "../../javascript/**/*.js";
 
 @theme {
   --color-primary: #5B63B7;
