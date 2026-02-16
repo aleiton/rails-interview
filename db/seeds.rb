@@ -6,6 +6,8 @@ puts 'Seeding database...'
 TodoItem.destroy_all
 TodoList.destroy_all
 
+load Rails.root.join('db/seeds/stress.rb')
+
 # Grocery shopping list
 groceries = TodoList.create!(name: 'Grocery Shopping')
 groceries.todo_items.create!(description: 'Buy milk and eggs', completed: true)
