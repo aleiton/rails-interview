@@ -14,11 +14,11 @@ module Api
     def index
       @per_page = [[(params[:per_page] || DEFAULT_PER_PAGE).to_i, 1].max, MAX_PER_PAGE].min
 
-      base_scope = @todo_list.todo_items.order(id: :asc)
+      base_scope = @todo_list.todo_items.order(id: :desc)
       @total_count = base_scope.count
       @incomplete_count = @todo_list.todo_items.where(completed: false).count
 
-      scope = params[:after_id].present? ? base_scope.where("id > ?", params[:after_id].to_i) : base_scope
+      scope = params[:after_id].present? ? base_scope.where("id < ?", params[:after_id].to_i) : base_scope
       all_items = scope.limit(@per_page + 1).to_a
       @has_next_page = all_items.length > @per_page
       @todo_items = all_items.first(@per_page)

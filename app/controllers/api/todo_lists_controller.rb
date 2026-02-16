@@ -8,7 +8,7 @@ module Api
 
     # GET /api/todolists
     def index
-      @todo_lists = TodoList.all
+      @todo_lists = TodoList.order(created_at: :desc)
 
       respond_to :json
     end

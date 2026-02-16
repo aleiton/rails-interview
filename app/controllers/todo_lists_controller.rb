@@ -4,12 +4,12 @@ class TodoListsController < ApplicationController
   before_action :set_todo_list, only: %i[show update destroy complete_all]
 
   def index
-    @todo_lists = TodoList.order(:name)
+    @todo_lists = TodoList.order(created_at: :desc)
     @todo_list = @todo_lists.first
   end
 
   def show
-    @todo_lists = TodoList.order(:name)
+    @todo_lists = TodoList.order(created_at: :desc)
   end
 
   def create
@@ -28,7 +28,7 @@ class TodoListsController < ApplicationController
             locals: { todo_list: @todo_list })
         end
         format.html do
-          @todo_lists = TodoList.order(:name)
+          @todo_lists = TodoList.order(created_at: :desc)
           render :index, status: :unprocessable_entity
         end
       end
@@ -49,7 +49,7 @@ class TodoListsController < ApplicationController
             locals: { todo_list: @todo_list, selected_list: @todo_list })
         end
         format.html do
-          @todo_lists = TodoList.order(:name)
+          @todo_lists = TodoList.order(created_at: :desc)
           render :index, status: :unprocessable_entity
         end
       end

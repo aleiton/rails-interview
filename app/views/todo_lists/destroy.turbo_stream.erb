@@ -1,7 +1,7 @@
 <%= turbo_stream.remove dom_id(@todo_list) %>
 
 <%= turbo_stream.update "main_content" do %>
-  <% first_list = TodoList.order(:name).first %>
+  <% first_list = TodoList.order(created_at: :desc).first %>
   <% if first_list %>
     <%= render "main_content", todo_list: first_list %>
   <% else %>

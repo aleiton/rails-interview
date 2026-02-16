@@ -40,7 +40,7 @@ describe Api::TodoItemsController do
       let!(:item3) { TodoItem.create!(description: 'Item three here', completed: false, todo_list: todo_list) }
 
       it 'returns next page using after_id cursor' do
-        get :index, params: { todo_list_id: todo_list.id, after_id: todo_item.id, per_page: 1 }, format: :json
+        get :index, params: { todo_list_id: todo_list.id, after_id: item3.id, per_page: 1 }, format: :json
 
         body = JSON.parse(response.body)
 
@@ -57,12 +57,12 @@ describe Api::TodoItemsController do
         body = JSON.parse(response.body)
 
         expect(body['items'].length).to eq(1)
-        expect(body['items'][0]['id']).to eq(item3.id)
+        expect(body['items'][0]['id']).to eq(todo_item.id)
         expect(body['meta']['has_next_page']).to eq(false)
       end
 
       it 'returns empty items when cursor is past last item' do
-        get :index, params: { todo_list_id: todo_list.id, after_id: item3.id }, format: :json
+        get :index, params: { todo_list_id: todo_list.id, after_id: todo_item.id }, format: :json
 
         body = JSON.parse(response.body)
 
