@@ -4,6 +4,12 @@ export default class extends Controller {
   static targets = ["item"]
   static classes = ["active", "inactive", "activeText", "inactiveText"]
 
+  itemTargetConnected(item) {
+    if (item.classList.contains("bg-primary/20")) {
+      this.#activate(item)
+    }
+  }
+
   select(event) {
     const clicked = event.target.closest("[data-list-nav-target='item']")
     if (!clicked) return
@@ -17,10 +23,14 @@ export default class extends Controller {
       if (overlay) overlay.classList.add("hidden")
     }
 
+    this.#activate(clicked)
+  }
+
+  #activate(active) {
     this.itemTargets.forEach(item => {
       const link = item.querySelector("[data-list-link]")
 
-      if (item === clicked) {
+      if (item === active) {
         item.classList.add("bg-primary/20", "border-primary")
         item.classList.remove("border-transparent")
         if (link) {

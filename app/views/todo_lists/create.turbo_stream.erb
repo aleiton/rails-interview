@@ -1,4 +1,4 @@
-<%= turbo_stream.append "todo_lists" do %>
+<%= turbo_stream.prepend "todo_lists" do %>
   <%= render partial: "todo_lists/todo_list",
              locals: { todo_list: @todo_list, selected_list: @todo_list } %>
 <% end %>
