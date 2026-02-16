@@ -23,15 +23,18 @@ module Sync
     private
 
     def compute
+      detect_push_deletes
       detect_pulls
       detect_push_creates
-      detect_push_deletes
     end
 
     def detect_pulls
       local_ext_ids = Set.new(@local_synced.keys)
+      push_delete_ids = Set.new(@push_deletes.map { |e| e[:external_id] })
 
       @external.each do |ext_id, ext_list|
+        next if push_delete_ids.include?(ext_id)
+
         if local_ext_ids.include?(ext_id)
           resolve_conflict(ext_list, @local_synced[ext_id])
         else

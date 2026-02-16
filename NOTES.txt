@@ -51,10 +51,46 @@ tests stay fast and deterministic.
 How to Run
 ==========
 
-1. ruby script/mock_external_api.rb
-2. SYNC_API_BASE_URL=http://localhost:4000 rake sync:run
-3. Run again — second run shows no changes (idempotent)
-4. bundle exec rspec — all tests pass
+Tests:
+  bundle exec rspec
+
+Development (general):
+  bin/rails db:seed
+  bin/dev
+
+Sync demo (all 8 scenarios in one run):
+
+  Terminal 1 — Start mock external API:
+    ruby script/mock_external_api.rb
+
+  Terminal 2 — Seed sync test data and run sync:
+    bin/rails runner db/seeds/sync.rb
+    bin/rake sync:run
+
+  Note: The sync seed (db/seeds/sync.rb) clears ALL data first, including the
+  200K-item stress test list from db:seed. This is intentional — the stress
+  test list would be treated as an unsynced push create, sending 200K items
+  to the external API in a single request. Use db/seeds/sync.rb for sync
+  testing and bin/rails db:seed for pagination/stress testing.
+
+  Verify (optional):
+    curl -s http://localhost:4000/todolists | ruby -rjson -e 'JSON.parse(STDIN.read).each { |l| puts "  #{l["name"]} (source_id: #{l["source_id"]}, items: #{l["items"].size})" }'
+
+  Idempotency — run sync again, should report all zeros:
+    bin/rake sync:run
+
+  Scenarios tested:
+    1. No action    — "Stable List" unchanged on both sides
+    2. Pull create  — "New External List" created locally
+    3. Push create  — Grocery Shopping, Weekend Chores, Work Tasks pushed
+    4. Pull update  — "Pull Test" renamed from external
+    5. Push update  — "Push Test (locally renamed)" pushed
+    6. Conflict     — "Conflict - External Wins" overwrites local (newer timestamp)
+                      Items: matched item updated, local-only preserved, external-only added
+    7. Pull delete  — "Orphaned List" removed (external deleted)
+    8. Push delete  — "Orphan Push" removed from API (local source deleted)
+
+  To reset: restart mock API + re-run bin/rails runner db/seeds/sync.rb
 
 
 What I'd Add in Production
