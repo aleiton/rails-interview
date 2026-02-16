@@ -1,9 +1,11 @@
-<%= render partial: "todo_items/todo_item", collection: @todo_items %>
+<%= turbo_frame_tag "todo_items_page_#{params[:after_id]}" do %>
+  <%= render partial: "todo_items/todo_item", collection: @todo_items %>
 
-<% if @has_next_page %>
-  <%= turbo_frame_tag "todo_items_page_#{@next_cursor}",
-      src: todo_list_todo_items_path(@todo_list, after_id: @next_cursor),
-      loading: :lazy do %>
-    <div class="p-4 text-center text-gray-400 text-sm">Loading more...</div>
+  <% if @has_next_page %>
+    <%= turbo_frame_tag "todo_items_page_#{@next_cursor}",
+        src: todo_list_todo_items_path(@todo_list, after_id: @next_cursor),
+        loading: :lazy do %>
+      <div class="p-4 text-center text-gray-400 text-sm">Loading more...</div>
+    <% end %>
   <% end %>
 <% end %>
