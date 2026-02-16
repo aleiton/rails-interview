@@ -3,7 +3,7 @@ import { createConsumer } from "@rails/actioncable"
 
 export default class extends Controller {
   static targets = ["button", "progressContainer", "progressBar", "progressText"]
-  static values = { listId: Number, listSlug: String }
+  static values = { listId: Number }
 
   connect() {
     this.consumer = createConsumer()
@@ -21,7 +21,7 @@ export default class extends Controller {
   start() {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content
 
-    fetch(`/todolists/${this.listSlugValue}/complete_all`, {
+    fetch(`/todolists/${this.listIdValue}/complete_all`, {
       method: "POST",
       headers: {
         "X-CSRF-Token": csrfToken,

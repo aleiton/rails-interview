@@ -10,7 +10,7 @@
 
     <span data-inline-edit-target="display"
           data-action="dblclick->inline-edit#edit">
-      <%= link_to todo_list.name, todo_list_by_slug_path(todo_list.to_param),
+      <%= link_to todo_list.name, todo_list_path(todo_list),
           data: { turbo_frame: "main_content", turbo_action: "advance", list_link: true },
           class: "text-sm truncate block #{todo_list == selected_list ? 'text-white font-semibold' : 'text-gray-300'}" %>
     </span>
