@@ -28,8 +28,21 @@
     <% end %>
   </div>
 
+  <% per_page = 50 %>
+  <% items = todo_list.todo_items.order(created_at: :desc).limit(per_page + 1).to_a %>
+  <% has_next = items.length > per_page %>
+  <% display_items = items.first(per_page) %>
+  <% next_cursor = display_items.last&.id %>
+
   <div id="todo_items" class="space-y-2">
-    <%= render partial: "todo_items/todo_item",
-               collection: todo_list.todo_items.order(created_at: :desc) %>
+    <%= render partial: "todo_items/todo_item", collection: display_items %>
+
+    <% if has_next %>
+      <%= turbo_frame_tag "todo_items_page_#{next_cursor}",
+          src: todo_list_todo_items_path(todo_list, after_id: next_cursor),
+          loading: :lazy do %>
+        <div class="p-4 text-center text-gray-400 text-sm">Loading more...</div>
+      <% end %>
+    <% end %>
   </div>
 </div>

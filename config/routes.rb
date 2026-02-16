@@ -14,7 +14,7 @@ Rails.application.routes.draw do
     member do
       post :complete_all
     end
-    resources :todo_items, path: :todoitems, only: %i[create update destroy] do
+    resources :todo_items, path: :todoitems, only: %i[index create update destroy] do
       member do
         patch :toggle
       end

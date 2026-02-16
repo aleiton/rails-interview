@@ -1,8 +1,20 @@
 # frozen_string_literal: true
 
 class TodoItemsController < ApplicationController
+  DEFAULT_PER_PAGE = 50
+
   before_action :set_todo_list
   before_action :set_todo_item, only: %i[update destroy toggle]
+
+  def index
+    scope = @todo_list.todo_items.order(created_at: :desc)
+    scope = scope.where("id < ?", params[:after_id].to_i) if params[:after_id].present?
+
+    all_items = scope.limit(DEFAULT_PER_PAGE + 1).to_a
+    @has_next_page = all_items.length > DEFAULT_PER_PAGE
+    @todo_items = all_items.first(DEFAULT_PER_PAGE)
+    @next_cursor = @todo_items.last&.id
+  end
 
   def create
     @todo_item = @todo_list.todo_items.new(todo_item_params)

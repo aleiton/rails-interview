@@ -1,42 +1,34 @@
 # frozen_string_literal: true
 
-# Stress test seed: ~200K items across 100 lists
+# Stress test seed: 200K items in a single list
 #
 # Usage: bin/rails runner db/seeds/stress.rb
 
 puts "Stress seeding database..."
 
-TodoItem.destroy_all
-TodoList.destroy_all
+# Remove previous stress test list if it exists
+TodoList.where(name: "Stress Test").destroy_all
 
-LIST_COUNT = 100
-ITEMS_PER_LIST = 2_000
-BATCH_SIZE = 1_000
+ITEM_COUNT = 200_000
+BATCH_SIZE = 5_000
 
-lists = LIST_COUNT.times.map do |i|
-  TodoList.create!(name: "Stress List #{i + 1}")
-end
+list = TodoList.create!(name: "Stress Test")
 
-puts "Created #{lists.size} lists."
+puts "Created list: #{list.name}"
 
-total = 0
-lists.each_with_index do |list, i|
-  records = ITEMS_PER_LIST.times.map do |j|
+ITEM_COUNT.times.each_slice(BATCH_SIZE).with_index do |batch_range, i|
+  records = batch_range.map do |j|
     {
       todo_list_id: list.id,
-      description: "Item #{j + 1} of list #{i + 1} — stress test",
+      description: "Stress item #{j + 1}",
       completed: rand < 0.3,
       created_at: Time.current,
       updated_at: Time.current
     }
   end
 
-  records.each_slice(BATCH_SIZE) do |batch|
-    TodoItem.insert_all(batch)
-  end
-
-  total += ITEMS_PER_LIST
-  puts "  List #{i + 1}/#{LIST_COUNT}: #{ITEMS_PER_LIST} items (#{total} total)" if (i + 1) % 10 == 0
+  TodoItem.insert_all(records)
+  puts "  #{(i + 1) * BATCH_SIZE} / #{ITEM_COUNT} items inserted"
 end
 
-puts "Done! #{TodoList.count} lists, #{TodoItem.count} items."
+puts "Done! #{TodoList.count} list, #{TodoItem.count} items."
