@@ -3,7 +3,7 @@
 class SyncJob < ApplicationJob
   queue_as :default
 
-  LOG_TAG = "[SyncJob]"
+  LOG_TAG = '[SyncJob]'
 
   retry_on StandardError, wait: :polynomially_longer, attempts: 3
 

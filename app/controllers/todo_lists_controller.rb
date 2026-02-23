@@ -23,8 +23,8 @@ class TodoListsController < ApplicationController
     else
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("new_todo_list",
-            partial: "todo_lists/form_with_errors",
+          render turbo_stream: turbo_stream.replace('new_todo_list',
+            partial: 'todo_lists/form_with_errors',
             locals: { todo_list: @todo_list })
         end
         format.html do
@@ -45,7 +45,7 @@ class TodoListsController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(dom_id(@todo_list),
-            partial: "todo_lists/todo_list",
+            partial: 'todo_lists/todo_list',
             locals: { todo_list: @todo_list, selected_list: @todo_list })
         end
         format.html do
@@ -70,7 +70,7 @@ class TodoListsController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream { head :ok }
-      format.html { redirect_to @todo_list, notice: "Completing all items..." }
+      format.html { redirect_to @todo_list, notice: 'Completing all items...' }
     end
   end
 

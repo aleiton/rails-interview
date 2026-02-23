@@ -32,6 +32,11 @@ module Sync
       local_ext_ids = Set.new(@local_synced.keys)
       push_delete_ids = Set.new(@push_deletes.map { |e| e[:external_id] })
 
+      classify_external_lists(local_ext_ids, push_delete_ids)
+      collect_pull_deletes
+    end
+
+    def classify_external_lists(local_ext_ids, push_delete_ids)
       @external.each do |ext_id, ext_list|
         next if push_delete_ids.include?(ext_id)
 
@@ -41,7 +46,9 @@ module Sync
           @pull_creates << ext_list
         end
       end
+    end
 
+    def collect_pull_deletes
       @local_synced.each do |ext_id, local_list|
         @pull_deletes << local_list unless @external.key?(ext_id)
       end

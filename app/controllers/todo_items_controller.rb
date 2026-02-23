@@ -8,7 +8,7 @@ class TodoItemsController < ApplicationController
 
   def index
     scope = @todo_list.todo_items.order(created_at: :desc)
-    scope = scope.where("id < ?", params[:after_id].to_i) if params[:after_id].present?
+    scope = scope.where('id < ?', params[:after_id].to_i) if params[:after_id].present?
 
     all_items = scope.limit(DEFAULT_PER_PAGE + 1).to_a
     @has_next_page = all_items.length > DEFAULT_PER_PAGE
@@ -27,11 +27,11 @@ class TodoItemsController < ApplicationController
     else
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("new_item_form",
-            partial: "todo_items/form_with_errors",
+          render turbo_stream: turbo_stream.replace('new_item_form',
+            partial: 'todo_items/form_with_errors',
             locals: { todo_list: @todo_list, todo_item: @todo_item })
         end
-        format.html { redirect_to @todo_list, alert: @todo_item.errors.full_messages.join(", ") }
+        format.html { redirect_to @todo_list, alert: @todo_item.errors.full_messages.join(', ') }
       end
     end
   end
@@ -46,10 +46,10 @@ class TodoItemsController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(dom_id(@todo_item),
-            partial: "todo_items/todo_item",
+            partial: 'todo_items/todo_item',
             locals: { todo_item: @todo_item })
         end
-        format.html { redirect_to @todo_list, alert: @todo_item.errors.full_messages.join(", ") }
+        format.html { redirect_to @todo_list, alert: @todo_item.errors.full_messages.join(', ') }
       end
     end
   end

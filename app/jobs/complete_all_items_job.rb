@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 class CompleteAllItemsJob < ApplicationJob
   queue_as :default
 
   BATCH_SIZE = 1_000
   PERCENTAGE_SCALE = 100.0
-  LOG_TAG = "[CompleteAllItemsJob]"
+  LOG_TAG = '[CompleteAllItemsJob]'
 
   retry_on StandardError, wait: :polynomially_longer, attempts: 3
 
   discard_on(StandardError) do |job, error|
     todo_list_id = job.arguments.first
     Rails.logger.error("#{LOG_TAG} Error: #{error.message}")
-    broadcast(todo_list_id, action: "error")
+    broadcast(todo_list_id, action: 'error')
   end
 
   def perform(todo_list_id)
@@ -20,7 +22,7 @@ class CompleteAllItemsJob < ApplicationJob
     if total == 0
       Rails.logger.info("#{LOG_TAG} Starting: list_id=#{todo_list_id}, total=0")
       Rails.logger.info("#{LOG_TAG} Completed: 0/0 in 0.0s")
-      self.class.broadcast(todo_list_id, action: "completed", completed: 0, total: 0)
+      self.class.broadcast(todo_list_id, action: 'completed', completed: 0, total: 0)
       return
     end
 
@@ -40,7 +42,7 @@ class CompleteAllItemsJob < ApplicationJob
       percentage = (completed_count / total.to_f * PERCENTAGE_SCALE).round(1)
 
       Rails.logger.info("#{LOG_TAG} Progress: #{completed_count}/#{total} (#{percentage}%)")
-      self.class.broadcast(todo_list_id, action: "progress", completed: completed_count, total: total,
+      self.class.broadcast(todo_list_id, action: 'progress', completed: completed_count, total: total,
                                          completed_ids: batch_ids)
     end
 
@@ -48,7 +50,7 @@ class CompleteAllItemsJob < ApplicationJob
     completed_count = total - incomplete_items(todo_list).count
 
     Rails.logger.info("#{LOG_TAG} Completed: #{completed_count}/#{total} in #{elapsed}s")
-    self.class.broadcast(todo_list_id, action: "completed", completed: completed_count, total: total)
+    self.class.broadcast(todo_list_id, action: 'completed', completed: completed_count, total: total)
   end
 
   def incomplete_items(todo_list)

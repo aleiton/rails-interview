@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TodoListChannel < ApplicationCable::Channel
   def subscribed
     todo_list = TodoList.find_by(id: params[:id])

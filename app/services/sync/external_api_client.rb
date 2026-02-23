@@ -2,7 +2,7 @@
 
 module Sync
   class ExternalApiClient
-    LOG_TAG = "[Sync::ExternalApiClient]"
+    LOG_TAG = '[Sync::ExternalApiClient]'
 
     class ApiError < StandardError
       attr_reader :status, :body
@@ -15,13 +15,13 @@ module Sync
     end
 
     def initialize(base_url: nil)
-      @base_url = base_url || ENV.fetch("SYNC_API_BASE_URL", "http://localhost:4000")
+      @base_url = base_url || ENV.fetch('SYNC_API_BASE_URL', 'http://localhost:4000')
       @connection = build_connection
     end
 
     # GET /todolists — returns all lists with nested items
     def fetch_all_lists
-      response = @connection.get("todolists")
+      response = @connection.get('todolists')
       handle_response(response)
     end
 
@@ -35,7 +35,7 @@ module Sync
             completed: item[:completed] }
         end
       end
-      response = @connection.post("todolists", body)
+      response = @connection.post('todolists', body)
       handle_response(response)
     end
 

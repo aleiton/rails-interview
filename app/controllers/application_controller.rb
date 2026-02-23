@@ -8,13 +8,13 @@ class ApplicationController < ActionController::Base
   private
 
   def raise_not_found
-    raise ActionController::RoutingError.new('Not supported format')
+    raise ActionController::RoutingError, 'Not supported format'
   end
 
   def record_not_found
     respond_to do |format|
       format.json { render json: { errors: ['Record not found'] }, status: :not_found }
-      format.html { render "errors/not_found", status: :not_found, layout: "application" }
+      format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
       format.turbo_stream { head :not_found }
     end
   end

@@ -4,13 +4,13 @@ module Sync
   class SnapshotBuilder
     def self.build_external(api_data)
       api_data.each_with_object({}) do |list, hash|
-        ext_id = list["id"]
+        ext_id = list['id']
         hash[ext_id] = {
           external_id: ext_id,
-          source_id: list["source_id"],
-          name: list["name"],
-          updated_at: parse_time(list["updated_at"]),
-          items: build_external_items(list["items"] || [])
+          source_id: list['source_id'],
+          name: list['name'],
+          updated_at: parse_time(list['updated_at']),
+          items: build_external_items(list['items'] || [])
         }
       end
     end
@@ -35,11 +35,11 @@ module Sync
     def self.build_external_items(items)
       items.map do |item|
         {
-          external_id: item["id"],
-          source_id: item["source_id"],
-          description: item["description"],
-          completed: item["completed"],
-          updated_at: parse_time(item["updated_at"])
+          external_id: item['id'],
+          source_id: item['source_id'],
+          description: item['description'],
+          completed: item['completed'],
+          updated_at: parse_time(item['updated_at'])
         }
       end
     end

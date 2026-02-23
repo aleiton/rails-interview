@@ -2,7 +2,7 @@
 
 module Sync
   class PushExecutor
-    LOG_TAG = "[Sync::PushExecutor]"
+    LOG_TAG = '[Sync::PushExecutor]'
 
     attr_reader :errors
 
@@ -24,24 +24,30 @@ module Sync
     private
 
     def create_list(local)
-      items = local[:items].map do |item|
-        { source_id: item[:id], description: item[:description], completed: item[:completed] }
-      end
-
+      items = build_push_items(local[:items])
       result = @api.create_list(source_id: local[:id], name: local[:name], items: items)
-      now = Time.current
-
-      list = TodoList.find(local[:id])
-      list.update_columns(external_id: result["id"], synced_at: now)
-
-      (result["items"] || []).each do |ext_item|
-        next if ext_item["source_id"].blank?
-
-        item = list.todo_items.find_by(id: ext_item["source_id"])
-        item&.update_columns(external_id: ext_item["id"], synced_at: now)
-      end
+      sync_created_items(local[:id], result)
     rescue StandardError => e
       record_error(:push_create, local[:id], e)
+    end
+
+    def build_push_items(local_items)
+      local_items.map do |item|
+        { source_id: item[:id], description: item[:description], completed: item[:completed] }
+      end
+    end
+
+    def sync_created_items(local_id, result)
+      now = Time.current
+      list = TodoList.find(local_id)
+      list.update_columns(external_id: result['id'], synced_at: now)
+
+      (result['items'] || []).each do |ext_item|
+        next if ext_item['source_id'].blank?
+
+        item = list.todo_items.find_by(id: ext_item['source_id'])
+        item&.update_columns(external_id: ext_item['id'], synced_at: now)
+      end
     end
 
     def update_list(ext, local)
@@ -69,18 +75,22 @@ module Sync
       ext_items_by_id = ext[:items].index_by { |i| i[:external_id] }
 
       local[:items].select { |i| i[:external_id].present? }.each do |local_item|
-        ext_item = ext_items_by_id[local_item[:external_id]]
+        update_or_delete_item(ext, local_item, ext_items_by_id)
+      end
+    end
 
-        if ext_item
-          @api.update_item(
-            list_external_id: ext[:external_id],
-            item_external_id: local_item[:external_id],
-            description: local_item[:description],
-            completed: local_item[:completed]
-          )
-        else
-          delete_item(ext[:external_id], local_item[:external_id])
-        end
+    def update_or_delete_item(ext, local_item, ext_items_by_id)
+      ext_item = ext_items_by_id[local_item[:external_id]]
+
+      if ext_item
+        @api.update_item(
+          list_external_id: ext[:external_id],
+          item_external_id: local_item[:external_id],
+          description: local_item[:description],
+          completed: local_item[:completed]
+        )
+      else
+        delete_item(ext[:external_id], local_item[:external_id])
       end
     end
 
